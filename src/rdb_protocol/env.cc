@@ -46,10 +46,10 @@ bool is_noreply(const protob_t<const Query> &q) {
 wire_func_t construct_optarg_wire_func(const Term &val) {
     protob_t<Term> arg = r::fun(r::expr(val)).release_counted();
 
-    dummy_backtrace_registry_t dummy_reg(EMPTY_BACKTRACE_ID);
+    dummy_backtrace_registry_t dummy_reg(backtrace_id_t::empty());
     compile_env_t empty_compile_env((var_visibility_t()), &dummy_reg);
     counted_t<func_term_t> func_term
-        = make_counted<func_term_t>(&empty_compile_env, arg, EMPTY_BACKTRACE_ID);
+        = make_counted<func_term_t>(&empty_compile_env, arg, backtrace_id_t::empty());
     counted_t<const func_t> func = func_term->eval_to_func(var_scope_t());
     return wire_func_t(func);
 }

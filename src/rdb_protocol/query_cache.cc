@@ -111,7 +111,7 @@ scoped_ptr_t<query_cache_t::ref_t> query_cache_t::create(
         Term *t = original_query->mutable_query();
         compile_env_t compile_env((var_visibility_t()), &bt_reg);
         root_term = compile_term(&compile_env, original_query.make_child(t),
-                                 EMPTY_BACKTRACE_ID);
+                                 backtrace_id_t::empty());
     } catch (const term_walker_exc_t &e) {
         throw query_cache_exc_t(Response::COMPILE_ERROR,
                                 e.what(), e.backtrace());

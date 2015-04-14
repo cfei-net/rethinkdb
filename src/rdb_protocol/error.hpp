@@ -15,8 +15,19 @@
 
 namespace ql {
 
-typedef uint32_t backtrace_id_t;
-const backtrace_id_t EMPTY_BACKTRACE_ID = 0;
+class backtrace_id_t {
+public:
+    // The 0 ID corresponds to an empty backtrace
+    backtrace_id_t() : id(0) { };
+    backtrace_id_t(uint32_t _id) : id(_id) { }
+    static backtrace_id_t empty() {
+        return backtrace_id_t();
+    }
+    uint32_t get() const { return id; }
+private:
+    uint32_t id;
+    RDB_DECLARE_ME_SERIALIZABLE(backtrace_id_t);
+};
 
 // Catch this if you want to handle either `exc_t` or `datum_exc_t`.
 class base_exc_t : public std::exception {
@@ -128,7 +139,7 @@ private:
     } while (0)
 #define rcheck(pred, type, msg) rcheck_target(this, pred, type, msg)
 #define rcheck_toplevel(pred, type, msg) \
-    rcheck_src(ql::EMPTY_BACKTRACE_ID, pred, type, msg)
+    rcheck_src(ql::backtrace_id_t::empty(), pred, type, msg)
 
 #define rfail_datum(type, args...) do {                          \
         rcheck_datum(false, type, strprintf(args));              \

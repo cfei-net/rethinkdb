@@ -19,7 +19,7 @@ bool real_backtrace_registry_t::frame_t::is_head() const {
 }
 
 real_backtrace_registry_t::real_backtrace_registry_t() {
-    frames.emplace_back(EMPTY_BACKTRACE_ID, datum_t::null());
+    frames.emplace_back(backtrace_id_t::empty(), datum_t::null());
 }
 
 backtrace_id_t real_backtrace_registry_t::new_frame(backtrace_id_t parent_bt,
@@ -30,11 +30,11 @@ backtrace_id_t real_backtrace_registry_t::new_frame(backtrace_id_t parent_bt,
 
 datum_t real_backtrace_registry_t::datum_backtrace(const exc_t &ex) const {
     size_t dummy_frames = ex.dummy_frames();
-    r_sanity_check(ex.backtrace() < frames.size());
+    r_sanity_check(ex.backtrace().get() < frames.size());
     std::vector<datum_t> res;
-    for (const frame_t *f = &frames[ex.backtrace()];
-         !f->is_head(); f = &frames[f->parent]) {
-        r_sanity_check(f->parent < frames.size());
+    for (const frame_t *f = &frames[ex.backtrace().get()];
+         !f->is_head(); f = &frames[f->parent.get()]) {
+        r_sanity_check(f->parent.get() < frames.size());
         if (dummy_frames > 0) {
             --dummy_frames;
         } else {
