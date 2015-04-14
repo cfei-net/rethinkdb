@@ -30,16 +30,16 @@ public:
     public:
         frame_t(intrusive_list_t<frame_t> *_parent_list,
                 Term::TermType _term_type,
-                bool _is_stream_funcall,
+                bool is_stream_funcall,
                 datum_t _val) :
             parent_list(_parent_list), term_type(_term_type),
-            val(_val), writes_legal(true), is_stream_funcall(_is_stream_funcall)
+            val(_val), writes_legal(true)
         {
             frame_t *prev_frame = parent_list->tail();
             if (prev_frame != nullptr) {
-                writes_legal = prev_frame->writes_legal;
+                writes_legal = prev_frame->writes_legal &&
+                    (is_stream_funcall || !term_forbids_writes(prev_frame->term_type));
             }
-            writes_legal &= !term_forbids_writes(term_type);
             parent_list->push_back(this);
         }
 
@@ -51,7 +51,6 @@ public:
         const Term::TermType term_type;
         const datum_t val;
         bool writes_legal;
-        bool is_stream_funcall;
     };
 
     void walk(Term *t, const frame_t *prev_frame, const frame_t *this_frame) {
@@ -73,13 +72,9 @@ public:
             }
         }
 
-        if (term_is_write_or_meta(t->type())) {
-            if (prev_frame != nullptr &&
-                !prev_frame->writes_legal &&
-                !this_frame->is_stream_funcall) {
-                throw term_walker_exc_t(strprintf("Cannot nest writes or meta ops in "
-                    "stream operations.  Use FOR_EACH instead."), backtrace());
-            }
+        if (term_is_write_or_meta(t->type()) && !this_frame->writes_legal) {
+            throw term_walker_exc_t(strprintf("Cannot nest writes or meta ops in "
+                "stream operations.  Use FOR_EACH instead."), backtrace());
         }
 
         for (int i = 0; i < t->args_size(); ++i) {
