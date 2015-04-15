@@ -1,7 +1,9 @@
 // Copyright 2010-2015 RethinkDB, all rights reserved.
 #ifndef RDB_PROTOCOL_BACKTRACE_HPP_
 #define RDB_PROTOCOL_BACKTRACE_HPP_
+
 #include <vector>
+#include <stdexcept>
 
 #include "rdb_protocol/datum.hpp"
 #include "rdb_protocol/error.hpp"
@@ -9,6 +11,24 @@
 #include "rdb_protocol/ql2_extensions.pb.h"
 
 namespace ql {
+
+// A query-language exception with its backtrace resolved to a datum_t
+// This should only be thrown from outside term evaluation - it is only meant
+// to be constructed or caught on the query's home coroutine.
+class bt_exc_t : public std::exception {
+public:
+    bt_exc_t(Response::ResponseType _response_type,
+             const std::string &_message,
+             datum_t _bt_datum)
+        : response_type(_response_type), message(_message), bt_datum(_bt_datum) { }
+    virtual ~bt_exc_t() throw () { }
+
+    const char *what() const throw () { return message.c_str(); }
+
+    const Response::ResponseType response_type;
+    const std::string message;
+    const datum_t bt_datum;
+};
 
 class backtrace_registry_t {
 public:

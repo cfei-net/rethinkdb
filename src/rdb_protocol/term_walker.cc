@@ -3,6 +3,7 @@
 
 #include <algorithm>
 
+#include "rdb_protocol/backtrace.hpp"
 #include "rdb_protocol/error.hpp"
 #include "rdb_protocol/minidriver.hpp"
 #include "rdb_protocol/pseudo_time.hpp"
@@ -73,15 +74,16 @@ public:
 
         if (t->type() == Term::ASC || t->type() == Term::DESC) {
             if (prev_frame != nullptr && prev_frame->term_type != Term::ORDER_BY) {
-                throw term_walker_exc_t(strprintf("%s may only be used as an argument "
-                    "to ORDER_BY.", (t->type() == Term::ASC ? "ASC" : "DESC")),
-                    backtrace());
+                throw bt_exc_t(Response::COMPILE_ERROR,
+                    strprintf("%s may only be used as an argument to ORDER_BY.",
+                              (t->type() == Term::ASC ? "ASC" : "DESC")), backtrace());
             }
         }
 
         if (term_is_write_or_meta(t->type()) && !this_frame->writes_legal) {
-            throw term_walker_exc_t(strprintf("Cannot nest writes or meta ops in "
-                "stream operations.  Use FOR_EACH instead."), backtrace());
+            throw bt_exc_t(Response::COMPILE_ERROR,
+                strprintf("Cannot nest writes or meta ops in stream operations.  Use "
+                          "FOR_EACH instead."), backtrace());
         }
 
         for (int i = 0; i < t->args_size(); ++i) {

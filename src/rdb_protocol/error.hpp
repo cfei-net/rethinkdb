@@ -193,23 +193,23 @@ base_exc_t::type_t exc_type(const scoped_ptr_t<val_t> &v);
 class exc_t : public base_exc_t {
 public:
     // We have a default constructor because these are serialized.
-    exc_t() : base_exc_t(base_exc_t::GENERIC), msg("UNINITIALIZED") { }
-    exc_t(base_exc_t::type_t type, const std::string &_msg,
+    exc_t() : base_exc_t(base_exc_t::GENERIC), message("UNINITIALIZED") { }
+    exc_t(base_exc_t::type_t type, const std::string &_message,
           backtrace_id_t _bt, size_t _dummy_frames = 0)
-        : base_exc_t(type), msg(_msg), bt(_bt), dummy_frames_(_dummy_frames) { }
+        : base_exc_t(type), message(_message), bt(_bt), dummy_frames_(_dummy_frames) { }
     exc_t(const base_exc_t &e, backtrace_id_t _bt, size_t _dummy_frames = 0)
-        : base_exc_t(e.get_type()), msg(e.what()),
+        : base_exc_t(e.get_type()), message(e.what()),
           bt(_bt), dummy_frames_(_dummy_frames) { }
     virtual ~exc_t() throw () { }
 
-    const char *what() const throw () { return msg.c_str(); }
+    const char *what() const throw () { return message.c_str(); }
 
     backtrace_id_t backtrace() const { return bt; }
     size_t dummy_frames() const { return dummy_frames_; }
 
     RDB_DECLARE_ME_SERIALIZABLE(exc_t);
 private:
-    std::string msg;
+    std::string message;
     backtrace_id_t bt;
     size_t dummy_frames_;
 };
@@ -220,16 +220,16 @@ private:
 // turned into a normal `exc_t`.
 class datum_exc_t : public base_exc_t {
 public:
-    datum_exc_t() : base_exc_t(base_exc_t::GENERIC), msg("UNINITIALIZED") { }
-    explicit datum_exc_t(base_exc_t::type_t type, const std::string &_msg)
-        : base_exc_t(type), msg(_msg) { }
+    datum_exc_t() : base_exc_t(base_exc_t::GENERIC), message("UNINITIALIZED") { }
+    explicit datum_exc_t(base_exc_t::type_t type, const std::string &_message)
+        : base_exc_t(type), message(_message) { }
     virtual ~datum_exc_t() throw () { }
 
-    const char *what() const throw () { return msg.c_str(); }
+    const char *what() const throw () { return message.c_str(); }
 
     RDB_DECLARE_ME_SERIALIZABLE(datum_exc_t);
 private:
-    std::string msg;
+    std::string message;
 };
 
 } // namespace ql

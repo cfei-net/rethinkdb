@@ -31,21 +31,6 @@ class env_t;
 
 namespace ql {
 
-class query_cache_exc_t : public std::exception {
-public:
-    query_cache_exc_t(Response_ResponseType _type,
-                      std::string _message,
-                      datum_t _bt_datum);
-    ~query_cache_exc_t() throw ();
-
-    void fill_response(Response *res) const;
-    const char *what() const throw ();
-
-    const Response_ResponseType type;
-    const std::string message;
-    const datum_t bt_datum;
-};
-
 // A query id, should be allocated when each query is received from the client
 // in order, so order can be checked for in queries that require it
 class query_id_t : public intrusive_list_node_t<query_id_t> {

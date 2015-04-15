@@ -268,8 +268,8 @@ void run(query_id_t &&query_id,
         } break;
         default: unreachable();
         }
-    } catch (const query_cache_exc_t &ex) {
-        fill_error(res, ex.type, ex.message, ex.bt_datum);
+    } catch (const bt_exc_t &ex) {
+        fill_error(res, ex.response_type, ex.message, ex.bt_datum);
     }
 }
 
