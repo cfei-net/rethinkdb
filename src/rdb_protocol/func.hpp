@@ -70,7 +70,7 @@ private:
 
 class reql_func_t : public func_t {
 public:
-    reql_func_t(backtrace_id_t backtrace,  // for bt_rcheckable_t
+    reql_func_t(backtrace_id_t backtrace, // for bt_rcheckable_t
                 const var_scope_t &captured_scope,
                 std::vector<sym_t> arg_names,
                 counted_t<const term_t> body);

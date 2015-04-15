@@ -20,9 +20,9 @@ public:
     static const datum_t EMPTY_BACKTRACE;
 };
 
-// All backtrace_ids allocated through this object will be the same as the
-// backtrace_id it was originally constructed with.  This is used when
-// compiling functions or rewrites.
+// All backtrace_ids allocated through this object will be the same as the backtrace_id
+// it was originally constructed with.  This is used when compiling minidriver functions
+// or rewrites that have no relation to the main term tree.
 class dummy_backtrace_registry_t : public backtrace_registry_t {
 public:
     dummy_backtrace_registry_t(backtrace_id_t _original_bt) :

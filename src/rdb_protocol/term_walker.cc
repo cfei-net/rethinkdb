@@ -50,6 +50,13 @@ public:
         intrusive_list_t<frame_t> *parent_list;
         const Term::TermType term_type;
         const datum_t val;
+
+        // True if writes are still legal at this node.  Basically:
+        // * Once writes become illegal, they are never legal again.
+        // * Writes are legal at the root.
+        // * If the parent term forbids writes in its function arguments AND we
+        //   aren't inside the 0th argument, writes are forbidden.
+        // * Writes are legal in all other cases.
         bool writes_legal;
     };
 
